@@ -1,15 +1,15 @@
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom';
-import { AppRoutes } from '../AppRoutes';
-
+import {Index}  from '../Pages/Index'; 
 import '../styles/App.css';
-const App = () => {
 
+import { Post } from '../Pages/Post';
+
+const App = () => {
   return (
     <BrowserRouter>
-      <AppRoutes />
+      <Index/>
     </BrowserRouter>
-
   )
 }
 

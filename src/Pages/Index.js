@@ -1,6 +1,8 @@
-import React from 'react';
-
-
+import React, { useEffect, useState } from "react";
+import { fetchPosts } from "../components/fetchPosts";
+import { Loader } from "../components/Loader";
+import { Details } from "./Details";
+import { Post } from "./Post";
 /*
 2) On Index Page, make an initial request to <code>https://jsonplaceholder.typicode.com/posts</code> to get all the posts. <br/>
     While the request is in progress, display a <code>Loader</code> component. <br/>
@@ -15,11 +17,44 @@ import React from 'react';
     So show only required number of buttons
 */
 
-export const Index = () => {
 
-    return( 
-        <div id="index">
-
-        </div>
-    )
-}
+const Index = () => {
+    const [data, setData] = useState(null);
+    const [page, setPage] = useState(1);
+  
+    const loadData = async () => {
+      fetchPosts(page,10)
+        .then((res) => res.json())
+        .then((jsonData) => {
+          setData(jsonData);
+        });
+    };
+  
+    useEffect(() => {
+      loadData();
+    }, []);
+  
+    useEffect(() => {
+      setData(null);
+      loadData();
+    }, [page]);
+  
+    const clickHandler = (val) => {
+      setPage(val);
+    };
+    return (
+      <>
+        {data == null ? (
+          <div id="loader" className="loader">
+            loading
+          </div>
+        ) : (
+          data.map((ele) => {
+            return <Post ele={ele} key={ele.id} />;
+          })
+        )}
+        <Loader page={page} clickHandler={clickHandler} />
+      </>
+    );
+  };
+export { Index };

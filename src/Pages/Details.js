@@ -1,6 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom"; 
 
+
 /*
     On clicking link in PostPreview component navigate to /post/:id, which shows the Post Page.
     Post Page has following requirements:
@@ -18,19 +19,18 @@ import {Link} from "react-router-dom";
 
  */
 
-const Post = ({ele}) => {
+const Details = ({ele}) => {
 
     return (
-
         <div id="post">
             <ul>
-                {/* <li><h1>{ele.id}</h1></li> */}
-                <Link to="/details"><li><h2>{ele.title}</h2></li></Link>
-                
-                {/* <li><p>{ele.body}</p></li>
-                <li><p>{ele.author}</p></li> */}
+                <li><h1>Post id:- {ele.id}</h1></li>
+                <li><h2>{ele.title}</h2></li>
+                 <li><p>{ele.body}</p></li>
+                <li><p>By:-{ele.author}</p></li> 
+                <Link to="/"><h2>Back to Home</h2></Link>
             </ul>
         </div>
     )
 }
-export {Post}
+export {Details}

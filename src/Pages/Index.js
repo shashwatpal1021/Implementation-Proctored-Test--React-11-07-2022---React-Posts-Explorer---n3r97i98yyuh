@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { fetchPosts } from "../components/fetchPosts";
-import { Loader } from "../components/Loader";
-import { Details } from "./Details";
-import { Post } from "./Post";
+import Loader from "../components/Loader";
+import PostPreview from "./PostPreview";
 /*
 2) On Index Page, make an initial request to <code>https://jsonplaceholder.typicode.com/posts</code> to get all the posts. <br/>
     While the request is in progress, display a <code>Loader</code> component. <br/>
@@ -17,44 +15,65 @@ import { Post } from "./Post";
     So show only required number of buttons
 */
 
+const Buttons = ({ pageHandler, length }) => {
+  let count = length / 10;
+  if (length % 10 > 0) count += 1;
+  let arr = [];
+  for (let i = 1; i <= count; i++) {
+    arr.push(i);
+  }
+  return arr.map((button) => (
+    <button onClick={() => pageHandler(button)} id={`page-${button}`}>
+      {button}
+    </button>
+  ));
+};
 
-const Index = () => {
-    const [data, setData] = useState(null);
-    const [page, setPage] = useState(1);
-  
-    const loadData = async () => {
-      fetchPosts(page,10)
-        .then((res) => res.json())
-        .then((jsonData) => {
-          setData(jsonData);
-        });
-    };
-  
-    useEffect(() => {
-      loadData();
-    }, []);
-  
-    useEffect(() => {
-      setData(null);
-      loadData();
-    }, [page]);
-  
-    const clickHandler = (val) => {
-      setPage(val);
-    };
-    return (
-      <>
-        {data == null ? (
-          <div id="loader" className="loader">
-            loading
-          </div>
-        ) : (
-          data.map((ele) => {
-            return <Post ele={ele} key={ele.id} />;
-          })
-        )}
-        <Loader page={page} clickHandler={clickHandler} />
-      </>
-    );
+export const Index = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [allData, setAllData] = useState(null);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetch(`https://jsonplaceholder.typicode.com/posts`)
+      .then((response) => response.json())
+      .then((json) => {
+        setAllData(json);
+        setIsLoading(false);
+        manageData();
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  const manageData = () => {
+    if (allData == null) return;
+    let realPage = page * 10;
+    let tmp = allData.filter((e) => e.id > realPage - 10 && e.id <= realPage);
+    setData(tmp);
   };
-export { Index };
+
+  useEffect(() => {
+    manageData();
+  }, [page, allData]);
+
+  const pageHandler = (buttonId) => {
+    setPage(buttonId);
+  };
+
+  return isLoading ? (
+    <Loader />
+  ) : (
+    <div id="index">
+      <ul id="postsList">
+        {data.map((e, id) => (
+          <li key={e.id}>
+            <PostPreview element={e} classId={id} />
+          </li>
+        ))}
+      </ul>
+      <Buttons pageHandler={pageHandler} length={allData.length} />
+    </div>
+  );
+};
